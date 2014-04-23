@@ -1,30 +1,34 @@
 package com.example.tests;
 
+import static org.testng.Assert.assertEquals;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.testng.annotations.Test;
 
 public class ContactCreationTests extends TestBase {
-
-  @Test
-  public void testContactCreation() throws Exception {
+	
+  @Test(dataProvider = "randomValidContactGenerator")
+  public void testContactCreation(ContactData contact) throws Exception {
 	app.getNavigationHelper().openMainPage();
+	
+    // save old state
+	List<ContactData> oldList = app.getContactHelper().getContacts();
+	
+    // do test
     app.getContactHelper().initContactCreation();
-    ContactData contact = new ContactData();
-    contact.firstname = "FirstName1";
-    contact.lastname = "LastName1";
-    contact.address1 = "Address1";
-    contact.homephone = "11111";
-    contact.mobilephone = "22222";
-    contact.workphone = "33333";
-    contact.email1 = "xxx@xxx.xx";
-    contact.email2 = "yyy@yyy.yy";
-    contact.birthday_day = "1";
-    contact.birthday_month = "January";
-    contact.birthday_year = "1980";
-    contact.address2 = "Address2";
-    contact.phone2 = "4444";
     app.getContactHelper().fillContactForm(contact);
     app.getContactHelper().submitContactCreation();
     app.getNavigationHelper().returnToMainPage();
+    
+    // save new state
+	List<ContactData> newList = app.getContactHelper().getContacts();
+    
+    // compare states
+    oldList.add(contact);
+    Collections.sort(oldList);
+    assertEquals(newList,oldList);
   }
 
 }
